@@ -21,5 +21,5 @@ module.exports = (app) => {
     app.use(version + PARTH_ADMIN + "/settings", authMiddleware.requireAuth, settingRoutes);
     app.use(version + PARTH_ADMIN + "/users", authMiddleware.requireAuth, userRoutes);
     app.use(version + PARTH_ADMIN + "/settings", authMiddleware.requireAuth, settingsRoutes);
-    app.use(version + PARTH_ADMIN + "/dashboard", authMiddleware.requireAuth, dashBoardRoutes);
+    // app.use(version + PARTH_ADMIN + "/dashboard", authMiddleware.requireAuth, dashBoardRoutes);
 }

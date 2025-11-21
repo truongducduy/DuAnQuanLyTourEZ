@@ -4,10 +4,7 @@ const User = require("../../models/user.model");
 const ForgotPassword = require("../../models/forgot-password.model");
 const generateHelper = require("../../helper/generate");
 const sendMailHelper = require("../../helper/sendMail");
-const Cart = require('../../models/cart.model');
-const Order = require('../../models/order.model');
-const Tour = require('../../models/tour.model');
-const tourHelper = require("../../helper/tours");
+
 
 // [POST]/api/v1/users/register
 module.exports.register = async (req, res) => {
@@ -69,25 +66,7 @@ module.exports.login = async (req, res) => {
         });
         return;
     }
-    let cart = await Cart.findOne({
-        user_id: user._id
-    });
-    if (!cart) {
-        cart = new Cart({
-            user_id: user._id
-        });
-        await cart.save();
-    }
-    const token = user.token;
-    res.cookie("cartId", cart.id);
-    res.cookie("token", token);
-
-    res.json({
-        code: 200,
-        message: "Đăng nhập thành công",
-        token: token,
-        cartId: cart.id
-    });
+    
 };
 
 // [POST]/api/v1/users/password/forgot
@@ -274,24 +253,24 @@ module.exports.changePass = async (req, res) => {
 };
 
 // [GET]/api/v1/user/orders
-module.exports.orderUser = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const data = await Order.find({
-            user_id: userId
-        })
-        res.json({
-            code: 200,
-            message: "Lấy danh sách order thành công!",
-            data: data
-        });
-    } catch (error) {
-        res.json({
-            code: 500,
-            message: "Có lỗi xảy ra" + error.message,
-        });
-    }
-};
+// module.exports.orderUser = async (req, res) => {
+//     try {
+//         const userId = req.user._id;
+//         const data = await Order.find({
+//             user_id: userId
+//         })
+//         res.json({
+//             code: 200,
+//             message: "Lấy danh sách order thành công!",
+//             data: data
+//         });
+//     } catch (error) {
+//         res.json({
+//             code: 500,
+//             message: "Có lỗi xảy ra" + error.message,
+//         });
+//     }
+// };
 
 // [GET]/api/v1/user/ordersDetail/:id
 module.exports.orderDetail = async (req, res) => {
