@@ -1,0 +1,620 @@
+/* --- Thiết lập chung và Reset --- */
+*, *::before, *::after {
+    /* Quan trọng: Đảm bảo padding/border không làm tăng kích thước (Khắc phục lỗi tràn ngang) */
+    box-sizing: border-box; 
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #0d0d0d;
+    color: #fff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Ngăn không cho nội dung bên trong tràn ra khỏi viewport */
+    overflow-x: hidden; 
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* --- Grid System giả định --- */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+}
+.col-2, .col-4 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.col-4 {
+    width: 33.3333%;
+}
+.col-2 {
+    width: 16.6666%;
+}
+.footer-contact.col-4 {
+    width: 33.3333%;
+}
+
+
+/* --- Các Button & Utility --- */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.book-now-btn {
+    background-color: #ff9900; 
+    color: #000;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.book-now-btn:hover {
+    background-color: #e68a00;
+}
+.user-icon-small {
+    font-size: 12px;
+}
+
+
+/* --- Top Bar (Thanh "Trang chủ" nhỏ) --- */
+.top-bar {
+    background-color: #000; 
+    color: #fff;
+    padding: 5px 0;
+    font-size: 13px;
+    position: fixed; 
+    top: 0;
+    width: 100%; 
+    left: 0; 
+    z-index: 100;
+}
+.top-bar-text {
+    opacity: 0.8;
+}
+
+/* --- Header Section --- */
+.header {
+    background-color: rgba(0, 0, 0, 0.5); 
+    position: fixed; 
+    top: 32px; 
+    left: 0;
+    width: 100%; 
+    right: auto; 
+    z-index: 99; 
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- Logo Styling (Đã sửa) --- */
+
+.logo a {
+    display: flex; /* Dùng Flexbox để căn chỉnh ảnh và text */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo-image {
+    width: 35px; /* Điều chỉnh kích thước ảnh logo */
+    height: 35px;
+    border-radius: 50%; /* Nếu bạn muốn logo dạng tròn */
+    margin-right: 8px; /* Khoảng cách giữa ảnh và chữ */
+    object-fit: cover;
+}
+
+.logo-text {
+    line-height: 1; 
+}
+/* --- Kết thúc Logo Styling --- */
+
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #fff;
+    padding: 5px 0;
+    display: block;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #ff9900;
+}
+
+.nav-links .active a {
+    color: #38c172; 
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-icon {
+    font-size: 20px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.2s;
+}
+.search-icon:hover {
+    color: #ff9900;
+}
+
+/* --- Hero Section (Đã FIX lỗi cân xứng) --- */
+.hero-section {
+    position: relative;
+    height: 80vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; /* Căn giữa nội dung theo chiều ngang */
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    padding-top: 100px; /* Bù trừ Header cố định */
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); 
+    z-index: 1;
+}
+
+.hero-section > .container {
+    z-index: 2; 
+    margin: 0 auto; /* Củng cố việc căn giữa container trong Hero Section */
+    width: 100%;
+    max-width: 1200px;
+}
+
+.hero-title {
+    font-size: 60px;
+    font-weight: 700;
+    margin-bottom: 50px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.search-bar {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 900px; 
+    /* 🚀 SỬA ĐỔI CUỐI CÙNG: Đảm bảo căn giữa tuyệt đối cho block có max-width */
+    margin: 0 auto; 
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    color: #333;
+    cursor: pointer;
+    border-right: 1px solid #ccc;
+    flex-grow: 1;
+    min-width: 150px;
+}
+
+.search-input-group:last-of-type {
+    border-right: none;
+    flex-grow: 0;
+}
+
+.search-input-group span { 
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.search-input-group div {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.search-input-group small {
+    font-size: 12px;
+    color: #777;
+}
+
+.search-input-group strong {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+}
+
+.search-btn {
+    background-color: #38c172; 
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+/* --- Tour Section (Đã fix lỗi cân xứng) --- */
+.tour-section {
+    padding: 50px 0;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    /* Đảm bảo tiêu đề căn giữa khi có max-width */
+    max-width: 800px; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tour-card-list {
+    /* Căn giữa các thẻ tour card khi số lượng ít hơn 3 trên màn hình lớn */
+    justify-content: center;
+    gap: 30px 0; 
+}
+
+/* --- Tour Card --- */
+.tour-card {
+    padding: 0 15px; 
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    height: fit-content;
+    margin-bottom: 30px;
+}
+
+.card-image-wrapper {
+    height: 200px;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.8);
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.card-duration {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #333;
+}
+
+.card-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #38c172; 
+}
+
+.card-detail-btn {
+    background-color: transparent;
+    color: #38c172;
+    border: 1px solid #38c172;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+/* --- Footer Section --- */
+.footer {
+    position: relative;
+    background-color: #0d0d0d;
+    padding: 50px 0 20px;
+    background-size: cover;
+    background-position: center;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    transition: background-image 0.5s ease;
+}
+
+.footer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.footer-content-wrapper {
+    position: relative;
+    z-index: 2;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.footer-col {
+    flex: 1;
+}
+
+.footer-about {
+    flex: 2;
+    text-align: left;
+    max-width: 400px; 
+}
+
+.footer-logo {
+    margin-bottom: 15px;
+}
+
+.footer-social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.newsletter-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.newsletter-form {
+    display: flex;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.newsletter-form input {
+    padding: 12px 15px;
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    font-size: 16px;
+    color: #000;
+}
+
+.newsletter-form button {
+    padding: 12px 15px;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.footer-bottom-links {
+    justify-content: space-between;
+    text-align: left;
+}
+
+.footer-links-group {
+    margin-bottom: 20px;
+}
+
+.footer-links-group h4 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.footer-links-group li {
+    margin-bottom: 10px;
+}
+
+.footer-links-group a {
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.footer-contact svg {
+    color: #ff9900; 
+    margin-right: 10px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.contact-item p {
+    margin: 0;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* --- Responsive (Cơ bản) --- */
+
+@media (max-width: 1200px) {
+    /* Màn hình lớn hơn 1024px nhưng nhỏ hơn 1200px */
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (max-width: 1024px) {
+    /* Màn hình máy tính bảng ngang */
+    .search-bar {
+        /* Đảm bảo căn giữa trên màn hình 1024px */
+        margin: 0 auto;
+    }
+    .search-input-group {
+        width: 48%; 
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
+    .search-input-group:nth-child(2) {
+        border-bottom: 1px solid #eee;
+    }
+    .search-input-group:last-of-type {
+        border-bottom: 1px solid #eee;
+        width: 48%;
+    }
+    .search-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .col-4 {
+        width: 50%;
+    }
+    .col-2 {
+        width: 33.3333%;
+    }
+    .footer-contact.col-4 {
+        width: 100%; 
+    }
+    
+    .hero-section {
+        padding-top: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Màn hình máy tính bảng đứng và điện thoại lớn */
+    
+    /* Chuyển sang flow bình thường trên mobile */
+    .top-bar, .header {
+        position: static; 
+        top: auto;
+        width: 100%;
+    }
+    .header {
+        padding-top: 0; 
+    }
+    
+    .header-content {
+        flex-direction: column;
+        padding-top: 15px;
+    }
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .hero-section {
+        height: auto; 
+        padding-top: 50px; 
+        padding-bottom: 50px;
+    }
+    .hero-title {
+        font-size: 40px;
+    }
+    .search-bar {
+        flex-direction: column;
+    }
+    .search-input-group {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+    }
+    .search-input-group:last-of-type {
+        border-bottom: none;
+    }
+    .col-4 {
+        width: 100%; 
+    }
+    .footer-top {
+        flex-direction: column;
+        align-items: center;
+    }
+    .footer-about, .footer-newsletter {
+        max-width: 100%;
+        text-align: center;
+    }
+    .footer-bottom-links {
+        flex-direction: column;
+        align-items: center;
+    }
+    .footer-links-group {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Điện thoại nhỏ */
+    .hero-title {
+        font-size: 30px;
+    }
+}
