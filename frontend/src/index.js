@@ -10,6 +10,8 @@ import {
  } from 'react-router-dom';
 
 import Home from './pages/Home';
+import { TourDetail } from './pages/TourDetail';
+import TourList from './Layout/TourList';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -19,6 +21,8 @@ root.render(
       <App>
         <Routes>
           <Route exact path='/' element={<Home />}></Route>
+          <Route path="/tour/:slugTour" element={<TourDetail/>} />
+          <Route path="/tours/:slugCategory" element={<TourList/>} />
         </Routes>
       </App>
     </Router>

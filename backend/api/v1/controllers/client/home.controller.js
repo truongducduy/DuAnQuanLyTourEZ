@@ -7,13 +7,13 @@ module.exports.index = async (req, res) => {
     const topSallers = await Tour.find({
         status: "active",
         deleted: false
-    }).sort({ sold: "desc" }).limit(5);
+    }).sort({ sold: "desc" }).limit(6);
 
     // new tours
     const newTours = await Tour.find({
         status: "active",
         deleted: false
-    }).sort({ createdAt: -1 }).limit(5);
+    }).sort({ createdAt: -1 }).limit(6);
 
    
     const today = new Date();

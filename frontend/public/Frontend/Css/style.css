@@ -284,6 +284,7 @@ ul {
 
 /* --- Tour Section (Đã fix lỗi cân xứng) --- */
 .tour-section {
+    background-color: rgb(28, 35, 31) ;
     padding: 50px 0;
     text-align: center;
 }
@@ -305,7 +306,7 @@ ul {
 }
 
 /* --- Tour Card --- */
-.tour-card {
+/* .tour-card {
     padding: 0 15px; 
     background-color: #1a1a1a;
     border-radius: 8px;
@@ -314,9 +315,11 @@ ul {
     text-align: left;
     height: fit-content;
     margin-bottom: 30px;
-}
+} */
 
 .card-image-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
     height: 200px;
     overflow: hidden;
 }
@@ -333,9 +336,10 @@ ul {
 }
 
 .card-title {
-    font-size: 20px;
+    height: 70px;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .card-duration {
