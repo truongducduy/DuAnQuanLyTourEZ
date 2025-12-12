@@ -1,0 +1,124 @@
+/* =============== WRAPPER =============== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #eef2f7, #dfe4ea);
+    padding: 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============== LOGIN BOX =============== */
+.auth-box {
+    width: 360px;
+    background: #ffffff;
+    padding: 35px 28px;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    animation: scaleIn 0.35s ease;
+    text-align: center;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.auth-box h2 {
+    margin-bottom: 18px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Error message */
+.error-msg {
+    background: #ffe5e5;
+    color: #d9534f;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* =============== FORM INPUT =============== */
+.auth-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #dcdcdc;
+    background: #fafafa;
+    color: #333;            
+    transition: all 0.25s ease;
+    outline: none;
+}
+
+
+.auth-box input:focus {
+    border-color: #4a90e2;
+    background: #ffffff;
+    box-shadow: 0 0 8px rgba(74,144,226,0.25);
+}
+
+/* =============== BUTTON =============== */
+.auth-box button {
+    padding: 13px 0;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+    transition: 0.25s;
+    margin-top: 5px;
+}
+
+.auth-box button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(53,122,189,0.4);
+}
+
+/* =============== SWITCH LINK =============== */
+.auth-switch {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #666;
+}
+
+.auth-switch a {
+    color: #357ABD;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 420px) {
+    .auth-box {
+        width: 92%;
+        padding: 30px 22px;
+    }
+
+    .auth-box h2 {
+        font-size: 22px;
+    }
+}

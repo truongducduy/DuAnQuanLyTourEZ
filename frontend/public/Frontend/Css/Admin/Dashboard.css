@@ -1,0 +1,164 @@
+/* =============== WRAPPER =============== */
+.dashboard-wrapper {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    animation: fadeIn 0.4s ease;
+    background: #f5f7fb;
+}
+
+/* Fade-in effect */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============== THỐNG KÊ =============== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.stat-box {
+    padding: 22px;
+    border-radius: 14px;
+    color: #fff;
+    background: #999;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    backdrop-filter: blur(3px);
+    cursor: pointer;
+}
+
+.stat-box h3 {
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.stat-box p {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Hover */
+.stat-box:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+
+/* Màu mới — gradient sang trọng */
+.green {
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+}
+
+.blue {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+}
+
+.teal {
+    background: linear-gradient(145deg, #1abc9c, #16a085);
+}
+
+.red {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+}
+
+/* =============== CHARTS =============== */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.chart-box {
+    height: 300px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid #f1f1f1;
+}
+
+.chart-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.13);
+}
+
+.chart-box h3 {
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* =============== TABLE =============== */
+.table-box {
+    background: #fff;
+    padding: 24px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    border: 1px solid #f1f1f1;
+}
+
+.table-box h3 {
+    margin-bottom: 18px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.table-box table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.table-box thead {
+    background: #f9fafc;
+}
+
+.table-box th {
+    padding: 14px;
+    font-weight: 600;
+    color: #555;
+}
+
+.table-box td {
+    padding: 14px;
+    color: #444;
+    border-bottom: 1px solid #eee;
+}
+
+.table-box tbody tr:hover {
+    background: #f7faff;
+    transition: 0.2s;
+}
+
+/* =============== Responsive =============== */
+@media (max-width: 992px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-box {
+        height: 260px;
+    }
+
+    .dashboard-wrapper {
+        padding: 16px;
+    }
+}
