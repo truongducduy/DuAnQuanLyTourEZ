@@ -21,7 +21,7 @@ const UserList = () => {
     setTotalPage(total);
   } catch (error) {
     console.log("Lỗi gọi API:", error);
-    setUsers([]); // tránh undefined
+    setUsers([]); 
   }
 };
 

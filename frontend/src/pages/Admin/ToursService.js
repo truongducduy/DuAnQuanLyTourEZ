@@ -10,7 +10,7 @@ export const getTours = async (params) => {
         headers: { Authorization: `Bearer ${token}` }
     });
 
-    return res.data;  // ⚠️ TRẢ VỀ DẠNG GIỐNG LOG
+    return res.data;  
 };
 
 

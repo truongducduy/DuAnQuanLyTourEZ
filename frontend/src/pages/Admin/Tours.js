@@ -9,17 +9,13 @@ const TourList = () => {
     const [sortKey, setSortKey] = useState("");
     const [sortValue, setSortValue] = useState("");
 
-    // Tours.js (Code cũ)
-// Tours.js (Code Đã Sửa)
 const fetchData = async () => {
     const res = await getTours({ page, search, sortKey, sortValue });
 
     console.log("RES:", res);
 
-    // SỬA: Thay res.tours thành res.toursObject
     setTours(res.toursObject || []); 
-    
-    // Giữ nguyên: Tên totalPage là đúng
+
     setTotalPage(res.totalPage || 1);
 };
 
@@ -47,10 +43,8 @@ const fetchData = async () => {
 
             <h2 className="page-title">Quản lý Tour</h2>
 
-            {/* Thanh điều khiển */}
             <div className="top-controls">
 
-                {/* Show entries */}
                 <div className="show-entries">
                     <span>Hiển thị:</span>
                     <select>
@@ -60,7 +54,6 @@ const fetchData = async () => {
                     </select>
                 </div>
 
-                {/* Search */}
                 <div className="search-box">
                     <input
                         type="text"
@@ -140,7 +133,6 @@ const fetchData = async () => {
                 </tbody>
             </table>
 
-            {/* Pagination */}
             <div className="pagination-footer">
                 {Array.from({ length: totalPage }, (_, i) => (
                     <button
