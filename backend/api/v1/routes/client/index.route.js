@@ -3,6 +3,7 @@ const userRoute = require("./user.route");
 const categoryRoute = require("./category.route");
 const tourRoute = require("./tour.route");
 const cartRoute = require("./cart.route");
+const checkoutRoute = require("./checkout.route");
 const searchRoute = require("./search.route");
 const settingRoute = require("./setting.route");
 
@@ -19,6 +20,7 @@ module.exports = (app) => {
     app.use(version + '/categories', categoryRoute);
     app.use(version + '/tours', tourRoute);
     app.use(version + '/carts', cartRoute);
+    app.use(version + '/checkout', checkoutRoute);
     app.use(version + '/search', searchRoute);
     app.use(version + '/setting', settingRoute);
 }

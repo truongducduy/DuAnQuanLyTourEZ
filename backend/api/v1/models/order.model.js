@@ -1,0 +1,47 @@
+const mongoose = require('mongoose');
+
+const orderSchema = new mongoose.Schema({
+    user_id: String,
+    orderCode: String,
+    userInfor: {
+        fullName: String,
+        phone: String,
+        email: String,
+        note: String
+    },
+    status: {
+        type: String,
+        default: "pending"
+    },
+    tours: [
+        {
+            tour_id: String,
+            price: Number,
+            discount: Number,
+            timeStarts: [
+                {
+                    timeDepart: Date,
+                    stock: Number,
+                }
+            ]
+        }
+    ],
+    voucherCode: String,
+    totalPrice: Number,
+    updateBy: [
+        {
+            account_id: String,
+            updatedAt: Date
+        }
+    ],
+    paymentInfo: Object,
+    inforCancel: {
+        numberAccount: String,
+        bankName: String
+    }
+}, {
+    timestamps: true
+});
+const Order = mongoose.model("Order", orderSchema, "orders");
+
+module.exports = Order;

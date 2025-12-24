@@ -1,5 +1,5 @@
 const Tour = require("../../models/tour.model");
-// const Order = require("../../models/order.model");
+const Order = require("../../models/order.model");
 
 // [GET]/api/v1/
 module.exports.index = async (req, res) => {
