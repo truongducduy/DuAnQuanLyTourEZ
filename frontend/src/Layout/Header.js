@@ -5,12 +5,12 @@ import Home from '../pages/Home';
 
 const Header = () => {
     const [categories, setCategories] = useState([]);
-
+    const [openMenu, setOpenMenu] = useState(false);
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/categories")
             .then(res => res.json())
             .then(data => {
-                console.log(data);
+                console.log("dataaaaaaaaaaaaaaaaa",data);
                 setCategories(data);
             })
             .catch(err => console.error(err));
@@ -32,23 +32,35 @@ const Header = () => {
                     <ul className="nav-links">
                         <li className="active"><a href="/">TRANG CHỦ</a></li>
                         <li><a href="#">GIỚI THIỆU</a></li>
-                        <li className="relative group">
-                        <span className="cursor-pointer hover:text-yl-hover pt-1 inline-block">TOUR</span>
 
-                        {/* MENU */}
-                        <ul className="absolute left-0 mt-2 hidden group-hover:block bg-black shadow-lg rounded-lg w-48 py-2">
-                            {categories.map(cat => (
-                                <li key={cat._id}>
-                                    <Link
-                                        to={`/tours/${cat.slug}`}
-                                        className="block px-4 py-2 hover:bg-gray-100"
-                                    >
-                                        {cat.title}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
+                        <li className="relative">
+                            {/* Nút bấm TOUR */}
+                            <span
+                                className="cursor-pointer hover:text-yl-hover pt-1 inline-block"
+                                onClick={() => setOpenMenu(!openMenu)}
+                            >
+                                TOUR
+                            </span>
+
+                            {/* MENU */}
+                            <ul
+                                className={`absolute left-0 mt-2 bg-black shadow-lg rounded-lg w-48 py-2 transition-all duration-200 
+                                    ${openMenu ? "block" : "hidden"}`}
+                            >
+                                {categories.map(cat => (
+                                    <li key={cat._id}>
+                                        <Link
+                                            to={`/tours/${cat.slug}`}
+                                            className="block px-4 py-2 hover:bg-gray-100"
+                                            onClick={() => setOpenMenu(false)} 
+                                        >
+                                            {cat.title}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </li>
+
                         <li><a href="#">ĐIỂM ĐẾN</a></li>
                         <li><a href="#">LIÊN HỆ</a></li>
                     </ul>

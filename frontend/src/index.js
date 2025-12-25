@@ -12,6 +12,7 @@ import {
 import Home from './pages/Home';
 import { TourDetail } from './pages/TourDetail';
 import TourList from './Layout/TourList';
+import SearchPage from './pages/SearchPage';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -23,6 +24,7 @@ root.render(
           <Route exact path='/' element={<Home />}></Route>
           <Route path="/tour/:slugTour" element={<TourDetail/>} />
           <Route path="/tours/:slugCategory" element={<TourList/>} />
+          <Route path="/search" element={<SearchPage />} />
         </Routes>
       </App>
     </Router>

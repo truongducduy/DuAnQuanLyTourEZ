@@ -1,0 +1,403 @@
+const Cart = require("../../models/cart.model");
+const Tour = require("../../models/tour.model");
+const Order = require("../../models/order.model");
+const Voucher = require("../../models/voucher.model");
+const tourHelper = require("../../helper/tours");
+const generate = require("../../helper/generate");
+// const vnpay = require('../../../../config/vnpay');
+const sendMailHelper = require("../../helper/sendMail");
+const moment = require("moment");
+
+// [GET] api/v1/checkout
+module.exports.index = async (req, res) => {
+    const userId = req.user._id;
+
+    const cart = await Cart.findOne({ user_id: userId });
+
+    if (!cart) {
+        return res.json({
+            code: 400,
+            message: "Giỏ hàng không tồn tại"
+        });
+    }
+
+    const processedCart = {
+        _id: cart._id,
+        user_id: cart.user_id,
+        tours: [],
+        totalPrice: 0
+    };
+
+    // Xử lý tour
+    for (const item of cart.tours) {
+        const tourInfo = await Tour.findById(item.tour_id).select("-timeStarts");
+        if (!tourInfo) continue;
+
+        const priceNew = tourHelper.priceNewTour(tourInfo);
+        const tourProcessed = {
+            tour_id: item.tour_id,
+            tourInfo,
+            priceNew,
+            timeStarts: []
+        };
+
+        for (const timeStart of item.timeStarts) {
+            const totalPrice = timeStart.stock * parseInt(priceNew);
+
+            tourProcessed.timeStarts.push({
+                timeDepart: timeStart.timeDepart,
+                quantity: timeStart.quantity,
+                totalPrice: totalPrice
+            });
+
+            processedCart.totalPrice += totalPrice;
+        }
+
+        if (tourProcessed.timeStarts.length > 0) {
+            processedCart.tours.push(tourProcessed);
+        }
+    }
+
+
+    res.json(processedCart);
+};
+
+// [POST] api/v1/checkout/order
+module.exports.order = async (req, res) => {
+    const cartId = req.cart.id;
+    const { fullName, phone, email, note, voucherCode } = req.body.userInfor;
+    const user_id = req.user.id;
+
+    const cart = await Cart.findOne({ _id: cartId });
+    if (!cart || (cart.tours.length === 0)) {
+        return res.json({
+            code: "400",
+            message: "Giỏ hàng trống!"
+        });
+    }
+
+    let totalPrice = 0;
+    let discountAmount = 0;
+    let tours = [];
+
+    // Xử lý tour
+    for (const tour of cart.tours) {
+        const tourInfo = await Tour.findById(tour.tour_id);
+        if (!tourInfo) {
+            return res.json({ code: "400", message: "Tour không tồn tại!" });
+        }
+
+        const priceNew = tourHelper.priceNewTour(tourInfo);
+        const timeStarts = [];
+
+        for (const timeStart of tour.timeStarts) {
+            const isValidTime = new Date(timeStart.timeDepart) >= new Date();
+            if (!isValidTime) {
+                return res.json({
+                    code: "400",
+                    message: "Thời gian khởi hành tour không hợp lệ hoặc đã quá ngày!"
+                });
+            }
+
+            const itemTotal = timeStart.stock * priceNew;
+            timeStarts.push({
+                timeDepart: new Date(timeStart.timeDepart),
+                stock: timeStart.stock
+            });
+            totalPrice += itemTotal;
+
+            await Tour.updateOne(
+                { _id: tour.tour_id, "timeStarts.timeDepart": new Date(timeStart.timeDepart) },
+                {
+                    $inc: {
+                        sold: timeStart.stock,
+                        "timeStarts.$[time].stock": -timeStart.stock
+                    }
+                },
+                {
+                    arrayFilters: [{ "time.timeDepart": new Date(timeStart.timeDepart) }]
+                }
+            );
+        }
+
+        tours.push({
+            tour_id: tour.tour_id,
+            price: tourInfo.price,
+            discount: tourInfo.discount,
+            timeStarts
+        });
+    }
+
+    // Xử lý voucher nếu có
+    if (voucherCode) {
+        const voucher = await Voucher.findOne({
+            code: voucherCode,
+            deleted: false
+        });
+
+        if (voucher) {
+            if (new Date() > new Date(voucher.endDate)) {
+                return res.json({ error: "400", message: "Voucher đã hết hạn!" });
+            }
+            if (voucher.quantity <= 0) {
+                return res.json({ error: "400", message: "Voucher đã hết số lượng!" });
+            }
+
+            const discountData = tourHelper.calculateDiscount(totalPrice, voucher);
+            discountAmount = discountData.discountAmount;
+            totalPrice = discountData.finalPrice;
+
+            await Voucher.updateOne({ _id: voucher._id }, { $inc: { quantity: -1 } });
+        }
+    }
+
+    const countOrder = await Order.countDocuments();
+    const code = generate.generateOrderCode(countOrder + 1);
+
+    const newOrder = new Order({
+        orderCode: code,
+        user_id,
+        userInfor: { fullName, phone, email, note },
+        status: "pending",
+        tours,
+        voucherCode,
+        totalPrice,
+        updateBy: []
+    });
+
+    const savedOrder = await newOrder.save();
+
+    // Clear giỏ hàng sau khi đặt
+    await Cart.updateOne(
+        { _id: cart._id },
+        {
+            tours: [],
+        }
+    );
+
+    res.json({
+        status: "200",
+        message: "Đặt hàng thành công!",
+        order: savedOrder
+    });
+};
+
+//[POST] api/v1/checkout/payment/:orderId
+module.exports.createPayment = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        if (!orderId) {
+            return res.json({
+                error: "400",
+                message: "Thiếu orderId!"
+            });
+        }
+
+        const order = await Order.findById(orderId);
+
+        if (req.user.id !== order.user_id) {
+            return res.json({
+                code: 400,
+                message: "Bạn không có quyền truy cập vào đơn hàng này!"
+            });
+        }
+
+        if (!order) {
+            return res.json({
+                error: "400",
+                message: "Không tìm thấy đơn hàng!"
+            });
+        }
+
+        const now = moment();
+        const expire = now.clone().add(15, "minutes");
+
+        const paymentUrl = vnpay.buildPaymentUrl({
+            vnp_Amount: order.totalPrice,
+            vnp_IpAddr: req.ip || "127.0.0.1",
+            vnp_TxnRef: order.orderCode + Date.now(),
+            vnp_OrderInfo: 'Thanh toan don hang ' + order._id,
+            vnp_OrderType: "other",
+            vnp_ReturnUrl: "http://localhost:3000/api/v1/checkout/success",
+            vnp_Locale: "vn",
+            vnp_CreateDate: now.format("YYYYMMDDHHmmss"),
+            vnp_ExpireDate: expire.format("YYYYMMDDHHmmss"),
+        });
+
+        res.json({ paymentUrl });
+    } catch (error) {
+        console.error("Lỗi tạo thanh toán VNPay:", error);
+        res.json({
+            Error: "500",
+            message: "Lỗi hệ thống!"
+        });
+    }
+};
+
+// [GET] api/v1/checkout/success
+module.exports.paymentCallback = async (req, res) => {
+    let verify;
+    try {
+        verify = vnpay.verifyReturnUrl(req.query);
+        if (!verify.isVerified) {
+            return res.redirect(`${process.env.FE_URL}/payment-result?status=invalid`);
+        }
+        if (!verify.isSuccess) {
+            return res.redirect(`${process.env.FE_URL}/payment-result?status=fail`);
+        }
+    } catch (error) {
+        return res.redirect(`${process.env.FE_URL}/payment-result?status=error`);
+    }
+
+    // Kiểm tra thông tin đơn hàng và xử lý tương ứng
+
+    const vnp_OrderInfo = verify.vnp_OrderInfo;
+    const parts = vnp_OrderInfo.split(' ');
+    const idOrder = parts[parts.length - 1];
+    const order = await Order.findOneAndUpdate(
+        { _id: idOrder },
+        { status: "paid", paymentInfo: verify },
+        { new: true }
+    );
+    // gửi otp qua email user
+    const subject = `Xác nhận đơn hàng - Cảm ơn ${order.userInfor.fullName} đã sử dụng dịch vụ của chúng tôi!`;
+
+    const html = `
+  <p>Chào <strong>${order.userInfor.fullName}</strong>,</p>
+
+  <p>
+    Cảm ơn bạn đã đặt dịch vụ tại <strong>${req.settingGeneral.websiteName}</strong>!<br>
+    Đơn hàng của bạn đã được xác nhận và đang được xử lý.
+  </p>
+
+  <p>
+    Dưới đây là thông tin đơn hàng của bạn:
+    <ul>
+      <li><strong>Mã đơn hàng:</strong> ${order.orderCode}</li>
+      <li><strong>Ngày đặt:</strong> ${new Date(order.createdAt).toLocaleDateString('vi-VN')}</li>
+      <li><strong>Tổng thanh toán:</strong> ${order.totalPrice.toLocaleString('vi-VN')} VNĐ</li>
+    </ul>
+  </p>
+
+  <p>
+    Hóa đơn điện tử sẽ được gửi kèm trong email này hoặc có thể được xem trong tài khoản của bạn trên website.
+  </p>
+
+  <p>
+    Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua số <strong>${req.settingGeneral.phone}</strong> hoặc email <strong>${req.settingGeneral.email}</strong>.
+  </p>
+
+  <p>Rất mong được phục vụ bạn trong thời gian tới!</p>
+
+  <p>Thân mến,<br>
+  <strong>${req.settingGeneral.websiteName}</strong></p>
+`;
+
+
+    sendMailHelper.sendMail(order.userInfor.email, subject, html);
+
+
+    return res.redirect(`${process.env.FE_URL}/payment-result?status=success&orderCode=${order.orderCode}`);
+};
+
+// [PATCH] api/v1/checkout/cancel/:orderId
+module.exports.cancel = async (req, res) => {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId);
+
+    if (req.user.id !== order.user_id) {
+        return res.json({
+            code: 400,
+            message: "Bạn không có quyền hủy đơn hàng này!"
+        });
+    }
+
+    if (!order) {
+        return res.json({
+            code: 400,
+            message: "Không tìm thấy đơn hàng!"
+        });
+    }
+
+    const now = new Date();
+    const updatedAt = new Date(order.updatedAt);
+
+    updatedAt.setDate(updatedAt.getDate() + 2);
+
+    if (now > updatedAt) {
+        return res.json({
+            code: 400,
+            message: 'Không thể hủy đơn hàng sau 2 ngày kể từ khi đặt'
+        });
+    }
+
+    // Kiểm tra thời gian khởi hành tour (dưới 3 ngày)
+    const checkDayTour = new Date(now);
+    checkDayTour.setDate(checkDayTour.getDate() + 3);
+    const hasNearDepartTour = order.tours.some(tour =>
+        tour.timeStarts.some(time => new Date(time.timeDepart) <= checkDayTour)
+    );
+    if (hasNearDepartTour) {
+        return res.json({
+            code: 400,
+            message: 'Không thể hủy tour khi trước ngày khởi hành còn dưới 3 ngày'
+        });
+    }
+
+    order.status = 'cancelled';
+    order.inforCancel.numberAccount = req.body.numberAccount;
+    order.inforCancel.bankName = req.body.bankName;
+
+    // tours
+    for (const tour of order.tours) {
+        for (const timeStart of tour.timeStarts) {
+            await Tour.updateOne(
+                {
+                    _id: tour.tour_id,
+                    "timeStarts.timeDepart": new Date(timeStart.timeDepart)
+                },
+                {
+                    $inc: {
+                        sold: -timeStart.stock,
+                        "timeStarts.$[time].stock": timeStart.stock
+                    }
+                },
+                { arrayFilters: [{ "time.timeDepart": new Date(timeStart.timeDepart) }] }
+            );
+        }
+    }
+
+    // gửi mail xác nhận đã hủy đơn hàng qua email user
+    const subject = `Xác nhận đã hủy đơn hàng thành công!`;
+    const html = `
+            <p>Xin chào <strong>${req.user.fullName}</strong>,</p>
+            <p>
+            Đơn hàng <strong>${order.orderCode}</strong> của bạn đã được hủy thành công.<br>
+             Chúng tôi sẽ hoàn tiền lại trong vòng 24h!
+            </p>
+            <p>
+            Nếu có bất kỳ thắc mắc nào, bạn vui lòng liên hệ với chúng tôi qua số điện thoại 
+            <strong>${req.settingGeneral.phone}</strong> hoặc email <strong>${req.settingGeneral.email}</strong>.
+            </p>
+            <p>Chúng tôi rất mong sẽ có cơ hội đồng hành cùng bạn trong những chuyến đi tiếp theo!</p>
+            <p>Trân trọng,<br>
+            <strong>${req.settingGeneral.websiteName}</strong></p>
+        `;
+
+    sendMailHelper.sendMail(req.user.email, subject, html);
+
+    await order.save();
+
+    return res.json({
+        code: 200,
+        message: 'Hủy đơn hàng thành công',
+        order: {
+            _id: order._id,
+            orderCode: order.orderCode,
+            status: order.status,
+            updatedAt: order.updatedAt,
+            numberAccount: req.body.numberAccount,
+            bankName: req.body.bankName
+        },
+    });
+};

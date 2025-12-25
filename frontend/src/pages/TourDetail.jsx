@@ -66,12 +66,12 @@ export const TourDetail = () => {
 
       <div className="grid grid-cols-12 gap-10">
         {/* LEFT CONTENT */}
-        <div className="col-span-8 space-y-8">
+        <div className="col-span-4 space-y-8">
           {/* DESCRIPTION */}
           <div>
             <h2 className="text-2xl font-bold mb-4">Mô tả</h2>
             <p className="text-gray-300">
-              {tour.description || "Chưa có mô tả cho tour này."}
+              {tour.information || "Chưa có mô tả cho tour này."}
             </p>
           </div>
 
@@ -120,7 +120,6 @@ export const TourDetail = () => {
             )}
           </div> */}
         </div>
-
         {/* RIGHT CONTENT */}
         <div className="col-span-4">
           <div className="bg-[#1a1f25] p-6 rounded-xl space-y-4">
