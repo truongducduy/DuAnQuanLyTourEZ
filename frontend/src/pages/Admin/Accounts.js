@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAccounts, changeStatus, deleteAccount } from "./AccountService";
-
+import { useNavigate } from "react-router-dom";
 
 const AccountList = () => {
     const [accounts, setAccounts] = useState([]);
@@ -10,20 +10,17 @@ const AccountList = () => {
     const [sortKey, setSortKey] = useState("");
     const [sortValue, setSortValue] = useState("");
 
+    const navigate = useNavigate();
+
     const fetchData = async () => {
         try {
             const res = await getAccounts({ page, search, sortKey, sortValue });
-
             setAccounts(res.data.accounts);
             setTotalPage(res.data.totalPage);
-
         } catch (error) {
             console.log("Lỗi gọi API:", error);
         }
     };
-
-
-
 
     useEffect(() => {
         fetchData();
@@ -51,12 +48,15 @@ const AccountList = () => {
                 type="text"
                 placeholder="Tìm theo tên..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                }}
                 style={{ padding: "8px", width: "200px" }}
             />
 
             {/* Sort */}
-            <select 
+            <select
                 onChange={(e) => setSortKey(e.target.value)}
                 style={{ marginLeft: "10px", padding: "8px" }}
             >
@@ -75,7 +75,13 @@ const AccountList = () => {
             </select>
 
             {/* Table */}
-            <table style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
+            <table
+                style={{
+                    width: "100%",
+                    marginTop: "20px",
+                    borderCollapse: "collapse"
+                }}
+            >
                 <thead>
                     <tr style={{ background: "#eee" }}>
                         <th>Họ tên</th>
@@ -88,6 +94,14 @@ const AccountList = () => {
                 </thead>
 
                 <tbody>
+                    {accounts.length === 0 && (
+                        <tr>
+                            <td colSpan="6" style={{ textAlign: "center" }}>
+                                Không có dữ liệu
+                            </td>
+                        </tr>
+                    )}
+
                     {accounts.map((item) => (
                         <tr key={item._id}>
                             <td>{item.fullName}</td>
@@ -95,8 +109,15 @@ const AccountList = () => {
                             <td>{item.phone || "—"}</td>
                             <td>
                                 {item.avatar ? (
-                                    <img src={item.avatar} alt="" width="40" style={{ borderRadius: "50%" }} />
-                                ) : "—"}
+                                    <img
+                                        src={item.avatar}
+                                        alt=""
+                                        width="40"
+                                        style={{ borderRadius: "50%" }}
+                                    />
+                                ) : (
+                                    "—"
+                                )}
                             </td>
                             <td>
                                 <button
@@ -104,16 +125,34 @@ const AccountList = () => {
                                         handleChangeStatus(item._id, item.status)
                                     }
                                 >
-                                    {item.status === "active" ? "Đang hoạt động" : "Đã khóa"}
+                                    {item.status === "active"
+                                        ? "Đang hoạt động"
+                                        : "Đã khóa"}
                                 </button>
                             </td>
                             <td>
+                                {/* 👉 NÚT SỬA */}
+                                <button
+                                    style={{
+                                        background: "#ffc107",
+                                        padding: "5px 10px",
+                                        marginRight: "8px"
+                                    }}
+                                    onClick={() =>
+                                        navigate(
+                                            `/admin/accounts/edit/${item._id}`
+                                        )
+                                    }
+                                >
+                                    Sửa
+                                </button>
+
+                                {/* 👉 NÚT XÓA */}
                                 <button
                                     style={{
                                         background: "red",
                                         color: "white",
-                                        padding: "5px 10px",
-                                        marginLeft: "10px"
+                                        padding: "5px 10px"
                                     }}
                                     onClick={() => handleDelete(item._id)}
                                 >

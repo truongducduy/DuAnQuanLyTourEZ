@@ -18,8 +18,7 @@ const TourCard = ({ tour }) => {
     return (
         <div className="tour-card col-4">
             <div className="card-image-wrapper">
-                <img src={images?.[0] || "/placeholder.jpg"} alt={title} className="card-image" />
-                
+                <img src={images?.[0] || "/placeholder.jpg"} alt={title} className="card-image" /> 
             </div>
             <div className="card-content">
                 <h3 className="card-title">{title}</h3>
@@ -28,8 +27,8 @@ const TourCard = ({ tour }) => {
                 <p className="card-sold">Đã có <strong>{sold}</strong> lượt đặt</p>
                 <div className="card-footer">
                     <div className="price-group">
-                        {discount > 0 && <span className="old-price">{price.toLocaleString()}₫</span>}
-                        <span className="card-price">{finalPrice.toLocaleString()}₫</span>
+                        {discount > 0 && <span>{price.toLocaleString()}₫</span>}
+                        {/* <span className="card-price">{finalPrice.toLocaleString()}₫</span> */}
                     </div>
                     <button className="btn card-detail-btn">XEM NGAY</button>
                 </div>

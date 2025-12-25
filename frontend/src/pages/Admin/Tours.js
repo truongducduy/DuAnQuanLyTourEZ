@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getTours, deleteTour, changeStatus } from "./ToursService";
-
 const TourList = () => {
+    const navigate = useNavigate();
     const [tours, setTours] = useState([]);
     const [totalPage, setTotalPage] = useState(1);
     const [page, setPage] = useState(1);
@@ -45,6 +46,14 @@ const fetchData = async () => {
 
             <div className="top-controls">
 
+                {/* NÚT THÊM MỚI TOUR */}
+                <button
+                    className="add-btn"
+                    onClick={() => navigate("/admin/tours/create")}
+                >
+                    ➕ Thêm mới tour
+                </button>
+
                 <div className="show-entries">
                     <span>Hiển thị:</span>
                     <select>
@@ -83,6 +92,7 @@ const fetchData = async () => {
                 </select>
             </div>
 
+
             {/* Bảng Tour */}
             <table className="tour-table">
                 <thead>
@@ -120,14 +130,24 @@ const fetchData = async () => {
                                 </span>
                             </td>
 
-                            <td>
+                            <td style={{ display: "flex", gap: "8px" }}>
+                                <button
+                                    className="edit-btn"
+                                    onClick={() => navigate(`/admin/tours/edit/${tour._id}`)}
+                                    title="Sửa tour"
+                                >
+                                    ✏️
+                                </button>
+
                                 <button
                                     className="delete-btn"
                                     onClick={() => handleDelete(tour._id)}
+                                    title="Xóa tour"
                                 >
                                     🗑
                                 </button>
                             </td>
+
                         </tr>
                     ))}
                 </tbody>
