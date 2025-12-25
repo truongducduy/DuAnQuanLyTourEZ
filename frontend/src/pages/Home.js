@@ -28,6 +28,11 @@ const Home = () => {
     const [newTours, setNewTours] = useState([]);
 
     useEffect(() => {
+        console.log("HOME MOUNTED");
+      }, []);
+      
+
+    useEffect(() => {
         axios.get("http://localhost:8080/api/v1/")
 
             .then(res => {

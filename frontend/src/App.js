@@ -1,18 +1,43 @@
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
+
 import Header from './Layout/Header';
-import Home from './pages/Home';
 import Footer from './Layout/Footer';
 
-function App(props) {
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+import AdminDashboard from './pages/AdminDashboard';
+import AdminLayout from './Layout/AdminLayout';
+
+function App() {
   return (
     <div className="App">
+
       <Header />
-        <section>
-          
-                  {props.children}
-              
-        </section>
+
+      <section style={{ minHeight: "80vh" }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* ADMIN LAYOUT KHÔNG DÙNG HEADER FOOTER */}
+          <Route 
+            path="/admindashboard" 
+            element={
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            } 
+          />
+        </Routes>
+      </section>
+
       <Footer />
+
     </div>
   );
 }

@@ -1,7 +1,22 @@
 import React from 'react';
-import { FaSearch, FaUser, FaCaretDown } from 'react-icons/fa';
+import { FaSearch, FaUser, FaUserCircle, FaCaretDown } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
+
 
 const Header = () => {
+
+    const navigate = useNavigate();
+
+    const token = localStorage.getItem("token");
+
+    let user = null;
+    try {
+        const storedUser = localStorage.getItem("user");
+        user = storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+        user = null;
+  }
+      
     return (
         <>
             
@@ -24,9 +39,29 @@ const Header = () => {
                         <li><a href="#">LIÊN HỆ</a></li>
                     </ul>
                     <div className="nav-icons">
-                        <FaSearch className="search-icon" />
-                        <button className="btn book-now-btn">BOOK NOW <FaUser className="user-icon-small" /></button>
+  <FaSearch className="search-icon" />
+
+                {!token ? (
+                    // CHƯA LOGIN
+                        <button
+                            className="btn book-now-btn"
+                            onClick={() => navigate("/login")}
+                        >
+                        BOOK NOW <FaUser className="user-icon-small" />
+                        </button>
+                    ) : (
+                    // ĐÃ LOGIN
+                        <div
+                            className="user-avatar"
+                            title={user?.name || user?.email}
+                        >
+                    {/* ICON TRÒN */}
+                        <FaUserCircle size={36} />
+
                     </div>
+                )}
+            </div>
+
                 </div>
             </header>
         </>
