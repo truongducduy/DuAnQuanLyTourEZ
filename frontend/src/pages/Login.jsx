@@ -2,48 +2,55 @@ import React, { useState } from "react";
 import { FaUser, FaLock, FaFacebookF, FaGoogle } from "react-icons/fa";
 import { userApi } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 
 const Login = () => {
+
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-  
-    if (!email || !password) {
-      setMessage("Vui lòng nhập đầy đủ email và mật khẩu");
-      return;
+  e.preventDefault();
+
+  if (!email || !password) {
+    setMessage("Vui lòng nhập đầy đủ email và mật khẩu");
+    return;
+  }
+
+  try {
+    const res = await userApi.login({ email, password });
+    console.log("LOGIN RESPONSE:", res.data);
+
+    // ✅ Chuẩn hoá data backend
+    const data = res.data.data || res.data;
+
+    if (!data.token) {
+      throw new Error("Backend không trả token");
     }
-  
-    try {
-      const res = await userApi.login({ email, password });
-      console.log("LOGIN RESPONSE:", res.data);
-  
-      const data = res.data.data || res.data;
-  
-      if (!data.token) {
-        throw new Error("Backend không trả token");
-      }
-  
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-  
-      setMessage("Đăng nhập thành công!");
-  
-      setTimeout(() => {
-        navigate("/");
-      }, 300);
-  
-    } catch (err) {
-      console.error(err);
-      setMessage(
-        err.response?.data?.message || err.message || "Email hoặc mật khẩu không đúng"
-      );
-    }
-  };
+
+    // ✅ DÙNG AUTH CONTEXT
+    login(data.user, data.token);
+
+    setMessage("Đăng nhập thành công!");
+
+    // 👉 Điều hướng NGAY
+    navigate("/");
+  } catch (err) {
+    console.error(err);
+
+    setMessage(
+      err.response?.data?.message ||
+      err.message ||
+      "Email hoặc mật khẩu không đúng"
+    );
+  }
+};
+
   
   return (
     <div className="w-full bg-mainbg flex justify-center px-4 pt-32 pb-22">

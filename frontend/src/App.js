@@ -1,43 +1,43 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 
-import Header from './Layout/Header';
-import Footer from './Layout/Footer';
-
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLayout from './Layout/AdminLayout';
+import MainLayout from './Layout/MainLayout';
 
 function App() {
   return (
     <div className="App">
+      <Routes>
 
-      <Header />
+        {/* ===== USER + PUBLIC (CÓ HEADER & FOOTER) ===== */}
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <Home />
+            </MainLayout>
+          }
+        />
 
-      <section style={{ minHeight: "80vh" }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
+        {/* ===== AUTH (KHÔNG HEADER) ===== */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <Route
+          path="/admindashboard"
+          element={
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          }
+        />
 
-          {/* ADMIN LAYOUT KHÔNG DÙNG HEADER FOOTER */}
-          <Route 
-            path="/admindashboard" 
-            element={
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
-            } 
-          />
-        </Routes>
-      </section>
-
-      <Footer />
-
+      </Routes>
     </div>
   );
 }

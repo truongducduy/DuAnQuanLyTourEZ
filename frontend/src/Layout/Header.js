@@ -1,21 +1,18 @@
 import React from 'react';
-import { FaSearch, FaUser, FaUserCircle, FaCaretDown } from 'react-icons/fa';
+import { FaSearch, FaUser, FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 
 
 const Header = () => {
 
     const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
+    const { user, token, logout } = useAuth();
+  
+    const [open, setOpen] = React.useState(false);
 
-    let user = null;
-    try {
-        const storedUser = localStorage.getItem("user");
-        user = storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-        user = null;
-  }
       
     return (
         <>
@@ -39,9 +36,9 @@ const Header = () => {
                         <li><a href="#">LIÊN HỆ</a></li>
                     </ul>
                     <div className="nav-icons">
-  <FaSearch className="search-icon" />
+                        <FaSearch className="search-icon" />
 
-                {!token ? (
+                        {!token ? (
                     // CHƯA LOGIN
                         <button
                             className="btn book-now-btn"
@@ -52,11 +49,25 @@ const Header = () => {
                     ) : (
                     // ĐÃ LOGIN
                         <div
-                            className="user-avatar"
-                            title={user?.name || user?.email}
+                            style={{ position: "relative" }}
                         >
+
                     {/* ICON TRÒN */}
-                        <FaUserCircle size={36} />
+                        <FaUserCircle 
+                        size={36} 
+                        style={{ cursor: "pointer" }}
+                        title={user?.email}
+                        onClick={() => setOpen(!open)}
+                        />
+
+                        {open && (
+                            <div className="user-dropdown">
+                            <p>
+                            {user?.fullName || user?.email}
+                                </p>
+                            <button onClick={logout}>Logout</button>
+                            </div>
+                        )}
 
                     </div>
                 )}
